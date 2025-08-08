@@ -214,5 +214,4 @@ window.onload = () => {
     idx = 0;
     loadWord();
   });
-  loadWord();
 };
