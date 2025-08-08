@@ -209,7 +209,7 @@ function preloadImages(files, callback) {
 
 
 window.onload = () => {
-  preloadImages(imageFiles, () => {
+  preloadImages(imageFiles,  () => {
     shuffle(words);
     idx = 0;
     loadWord();
