@@ -64,14 +64,32 @@ function playSound(sound) {
 
 function loadWord() {
   silly = false;
-  document.getElementById('image').src = words[idx].img;
-  document.getElementById('target-word').innerText = words[idx].word;
-  document.getElementById('drop-zone').innerText = '';
-  document.getElementById('feedback').innerText = '';
-  const lettersDiv = document.getElementById('letters');
-  lettersDiv.innerHTML = '';
-  words[idx].word.split('').sort(() => 0.5 - Math.random()).forEach(l => createLetterButton(l));
-  createBackspaceButton();
+
+  const imgElement = document.getElementById('image');
+  const newSrc = words[idx].img;
+
+  const tempImg = new Image();
+  tempImg.onload = () => {
+    imgElement.src = newSrc;
+    document.getElementById('target-word').innerText = words[idx].word;
+    document.getElementById('drop-zone').innerText = '';
+    document.getElementById('feedback').innerText = '';
+
+    const lettersDiv = document.getElementById('letters');
+    lettersDiv.innerHTML = '';
+    words[idx].word
+      .split('')
+      .sort(() => 0.5 - Math.random())
+      .forEach(l => createLetterButton(l));
+    createBackspaceButton();
+  };
+
+  tempImg.onerror = () => {
+    console.error(`Failed to load image: ${newSrc}`);
+    imgElement.src = 'images/fallback.png'; // Optional fallback
+  };
+
+  tempImg.src = newSrc;
 }
 
 function createLetterButton(letter) {
