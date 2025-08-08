@@ -1,0 +1,22 @@
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"><title>Word Builder</title>
+<link rel="stylesheet" href="style.css"></head><body>
+<h1>Word Builder Game</h1>
+<div id="game-container">
+  <img id="image" src="images/cat.png" alt="">
+  <h2 id="target-word">CAT</h2>
+  <div class="letters" id="letters"></div>
+  <div class="drop-zone" id="drop-zone">Drop letters here</div>
+  <div>
+    <button class="check-btn" onclick="checkWord()">Check</button>
+    <button class="next-btn" onclick="nextWord()">Next Word</button>
+    <button class="silly-btn" onclick="toggleSillyMode()">Silly Mode</button>
+    <button onclick="sayWord()">Hear Word</button>
+  </div>
+  <div id="feedback"></div>
+</div>
+<canvas id="confettiCanvas"></canvas>
+<script src="script.js"></script>
+</body></html>

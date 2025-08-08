@@ -1,0 +1,139 @@
+body {
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  background: #fff8e7;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  color: #ff5722;
+  margin: 20px 0;
+  font-size: 42px;
+}
+
+#game-container {
+  max-width: 700px;
+  margin: auto;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+img {
+  max-width: 200px;
+  margin: 15px auto;
+  display: block;
+  border-radius: 12px;
+}
+
+#target-word {
+  font-size: 36px;
+  color: #333;
+  margin: 10px 0;
+}
+
+.letters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.letter {
+  background: #4CAF50;
+  color: white;
+  padding: 18px;
+  font-size: 26px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.3s ease;
+  user-select: none;
+}
+
+.letter:hover {
+  background: #45a049;
+  transform: scale(1.1);
+}
+
+.drop-zone {
+  border: 3px dashed #ff9800;
+  min-height: 60px;
+  width: 90%;
+  margin: 20px auto;
+  font-size: 32px;
+  padding: 15px;
+  border-radius: 15px;
+  background: #fff;
+  color: #444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  white-space: pre-wrap;
+}
+
+button {
+  margin: 10px;
+  padding: 14px 28px;
+  font-size: 18px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.check-btn {
+  background: #4CAF50;
+  color: white;
+}
+
+.check-btn:hover {
+  background: #43a047;
+}
+
+.next-btn {
+  background: #2196F3;
+  color: white;
+}
+
+.next-btn:hover {
+  background: #1976d2;
+}
+
+.silly-btn {
+  background: #FF5722;
+  color: white;
+}
+
+.silly-btn:hover {
+  background: #e64a19;
+}
+
+#feedback {
+  font-size: 26px;
+  margin-top: 15px;
+  font-weight: bold;
+}
+
+@media (max-width: 600px) {
+  h1 {
+    font-size: 32px;
+  }
+
+  #target-word {
+    font-size: 28px;
+  }
+
+  .letter {
+    font-size: 22px;
+    padding: 14px;
+  }
+
+  .drop-zone {
+    font-size: 24px;
+    padding: 10px;
+  }
+}

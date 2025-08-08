@@ -1,0 +1,202 @@
+// Fisher–Yates shuffle
+function shuffle(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+// List your images here (exact filenames in images/ folder)
+const imageFiles = [
+  'CAT.png',
+  'DOG.png',
+  'SUN.png',
+  'CAR.png',
+  'LIAM.jpg',
+  'ELENA.jpg',
+  'MOM.jpg',
+  'DAD.jpg',
+  'MAMAN.jpg',
+  'BABA.jpg',
+  'NIMA.jpg',
+  'MARJAN.jpg',
+  'LOVE.png',
+  'PIG.png',
+  'COW.png',
+  'BAT.png',
+  'BEE.png',
+  'EGG.png',
+  'JAM.png',
+  'CORN.png',
+  'BAG.png',
+  'PEN.png',
+  'MAP.png',
+  'BOX.png',
+  'SKY.jpg',
+  'LEAF.png',
+  'TREE.png',
+  'SEA.png',
+  'RAIN.png',
+  'HAT.png',
+  'SILLY.png'  // silly mode image
+];
+
+// Build the words array (exclude silly.png from normal words)
+const words = imageFiles
+  .filter(name => name.toLowerCase() !== 'silly.png')
+  .map(name => ({
+    img: 'images/' + name,
+    word: name.split('.')[0].toUpperCase()
+  }));
+
+shuffle(words);
+
+let idx = 0;
+let silly = false;
+
+const clickSfx = new Audio('sounds/click.mp3');
+const successSfx = new Audio('sounds/success.mp3');
+
+function playSound(sound) {
+  sound.currentTime = 0;
+  sound.play();
+}
+
+function loadWord() {
+  silly = false;
+  document.getElementById('image').src = words[idx].img;
+  document.getElementById('target-word').innerText = words[idx].word;
+  document.getElementById('drop-zone').innerText = '';
+  document.getElementById('feedback').innerText = '';
+  const lettersDiv = document.getElementById('letters');
+  lettersDiv.innerHTML = '';
+  words[idx].word.split('').sort(() => 0.5 - Math.random()).forEach(l => createLetterButton(l));
+  createBackspaceButton();
+}
+
+function createLetterButton(letter) {
+  const btn = document.createElement('div');
+  btn.className = 'letter';
+  btn.innerText = letter;
+  btn.onclick = () => {
+    playSound(clickSfx);
+    const zone = document.getElementById('drop-zone');
+    zone.innerText += letter;
+    speak(letter);
+
+    // Check in silly mode as user types
+    if (silly) {
+      checkSillyWord(zone.innerText);
+    }
+  };
+  document.getElementById('letters').appendChild(btn);
+}
+
+function createBackspaceButton() {
+  const btn = document.createElement('div');
+  btn.className = 'letter';
+  btn.style.background = '#FF9800';
+  btn.innerText = '⌫';
+  btn.onclick = () => {
+    playSound(clickSfx);
+    const zone = document.getElementById('drop-zone');
+    zone.innerText = zone.innerText.slice(0, -1);
+  };
+  document.getElementById('letters').appendChild(btn);
+}
+
+function createSpaceButton() {
+  const btn = document.createElement('div');
+  btn.className = 'letter';
+  btn.style.background = '#9E9E9E'; // gray for space
+  btn.innerText = '␣'; // or just 'SPACE'
+  btn.onclick = () => {
+    playSound(clickSfx);
+    const zone = document.getElementById('drop-zone');
+    zone.textContent += ' ';
+  };
+  document.getElementById('letters').appendChild(btn);
+}
+
+function checkWord() {
+  const formed = document.getElementById('drop-zone').innerText;
+  if (silly) {
+    document.getElementById('feedback').innerText = 'In Silly Mode, any word is okay!';
+    return;
+  }
+  if (formed === words[idx].word) {
+    document.getElementById('feedback').innerText = '✅ Great!';
+    playSound(successSfx);
+    speak(formed);
+    launchConfetti();
+  } else {
+    document.getElementById('feedback').innerText = '❌ Try Again!';
+    playSound(clickSfx);
+  }
+}
+
+function nextWord() {
+  idx = (idx + 1) % words.length;
+  loadWord();
+}
+
+function toggleSillyMode() {
+  silly = !silly;
+  document.getElementById('drop-zone').innerText = '';
+  document.getElementById('feedback').innerText = silly ? 'Silly Mode: Build any word!' : '';
+  const lettersDiv = document.getElementById('letters');
+  lettersDiv.innerHTML = '';
+  if (silly) {
+    document.getElementById('image').src = 'images/SILLY.png';
+    document.getElementById('target-word').innerText = '';
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(createLetterButton);
+    createBackspaceButton();
+    createSpaceButton();
+  } else {
+    loadWord();
+  }
+}
+
+function checkSillyWord(typedWord) {
+  const match = words.find(w => w.word === typedWord);
+  if (match) {
+    playSound(successSfx);
+    speak(typedWord);
+    launchConfetti();
+
+    // Show the matching image for 3 seconds, then revert
+    document.getElementById('image').src = match.img;
+    setTimeout(() => {
+      if (silly) {
+        document.getElementById('image').src = 'images/SILLY.png';
+      }
+    }, 3000);
+  }
+}
+
+function sayWord() {
+  const txt = silly ? document.getElementById('drop-zone').innerText || '???' : words[idx].word;
+  playSound(clickSfx);
+  speak(txt);
+}
+
+function speak(txt) {
+  if (!txt) return;
+  const u = new SpeechSynthesisUtterance(txt);
+  speechSynthesis.speak(u);
+}
+
+// Example simple confetti animation (can replace with library)
+function launchConfetti() {
+  if (window.confetti) {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 }
+    });
+  }
+}
+
+window.onload = () => {
+  loadWord();
+};
