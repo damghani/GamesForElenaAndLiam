@@ -197,6 +197,23 @@ function launchConfetti() {
   }
 }
 
+function preloadImages(files, callback) {
+  let loaded = 0;
+  files.forEach(file => {
+    const img = new Image();
+    img.src = 'images/' + file;
+    img.onload = img.onerror = () => {
+      loaded++;
+      if (loaded === files.length) callback();
+    };
+  });
+}
+
+
 window.onload = () => {
-  loadWord();
+  preloadImages(imageFiles, () => {
+    shuffle(words);
+    idx = 0;
+    loadWord();
+  });
 };
