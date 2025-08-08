@@ -164,16 +164,28 @@ function toggleSillyMode() {
   document.getElementById('feedback').innerText = silly ? 'Silly Mode: Build any word!' : '';
   const lettersDiv = document.getElementById('letters');
   lettersDiv.innerHTML = '';
+
+  const imgElement = document.getElementById('image');
+
   if (silly) {
-    document.getElementById('image').src = 'images/SILLY.png';
-    document.getElementById('target-word').innerText = '';
-    'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(createLetterButton);
-    createBackspaceButton();
-    createSpaceButton();
+    const tempImg = new Image();
+    tempImg.onload = () => {
+      imgElement.src = 'images/SILLY.png';
+      document.getElementById('target-word').innerText = '';
+      'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(createLetterButton);
+      createBackspaceButton();
+      createSpaceButton();
+    };
+    tempImg.onerror = () => {
+      console.error('Failed to load silly mode image');
+      imgElement.src = 'images/fallback.png';
+    };
+    tempImg.src = 'images/SILLY.png';
   } else {
     loadWord();
   }
 }
+
 
 function checkSillyWord(typedWord) {
   const match = words.find(w => w.word === typedWord);
