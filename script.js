@@ -82,7 +82,7 @@ function createLetterButton(letter) {
     playSound(clickSfx);
     const zone = document.getElementById('drop-zone');
     zone.innerText += letter;
-    speak(letter);
+    // speak(letter);
 
     // Check in silly mode as user types
     if (silly) {
