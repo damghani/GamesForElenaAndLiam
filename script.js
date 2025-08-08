@@ -49,8 +49,6 @@ const words = imageFiles
     word: name.split('.')[0].toUpperCase()
   }));
 
-shuffle(words);
-
 let idx = 0;
 let silly = false;
 
@@ -64,43 +62,14 @@ function playSound(sound) {
 
 function loadWord() {
   silly = false;
-
-  const imgElement = document.getElementById('image');
-  const lettersDiv = document.getElementById('letters');
-  const dropZone = document.getElementById('drop-zone');
-
-  // Clear UI immediately so it's never left blank
-  imgElement.src = '';
-  lettersDiv.innerHTML = '';
-  dropZone.innerText = '';
-  document.getElementById('feedback').innerText = '';
-
-  // Preload image to avoid missing image problem
-  const preloader = new Image();
-  preloader.onload = () => {
-    imgElement.src = preloader.src;
-
-    // Only build letters after image is ready
-    words[idx].word
-      .split('')
-      .sort(() => 0.5 - Math.random())
-      .forEach(l => createLetterButton(l));
-    createBackspaceButton();
-  };
-  preloader.onerror = () => {
-    console.error('Failed to load image:', words[idx].img);
-    imgElement.alt = 'Image not available';
-
-    // Still show letters even if image failed
-    words[idx].word
-      .split('')
-      .sort(() => 0.5 - Math.random())
-      .forEach(l => createLetterButton(l));
-    createBackspaceButton();
-  };
-
-  preloader.src = words[idx].img;
+  document.getElementById('image').src = words[idx].img;
   document.getElementById('target-word').innerText = words[idx].word;
+  document.getElementById('drop-zone').innerText = '';
+  document.getElementById('feedback').innerText = '';
+  const lettersDiv = document.getElementById('letters');
+  lettersDiv.innerHTML = '';
+  words[idx].word.split('').sort(() => 0.5 - Math.random()).forEach(l => createLetterButton(l));
+  createBackspaceButton();
 }
 
 function createLetterButton(letter) {
@@ -175,28 +144,16 @@ function toggleSillyMode() {
   document.getElementById('feedback').innerText = silly ? 'Silly Mode: Build any word!' : '';
   const lettersDiv = document.getElementById('letters');
   lettersDiv.innerHTML = '';
-
-  const imgElement = document.getElementById('image');
-
   if (silly) {
-    const tempImg = new Image();
-    tempImg.onload = () => {
-      imgElement.src = 'images/SILLY.png';
-      document.getElementById('target-word').innerText = '';
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(createLetterButton);
-      createBackspaceButton();
-      createSpaceButton();
-    };
-    tempImg.onerror = () => {
-      console.error('Failed to load silly mode image');
-      imgElement.src = 'images/fallback.png';
-    };
-    tempImg.src = 'images/SILLY.png';
+    document.getElementById('image').src = 'images/SILLY.png';
+    document.getElementById('target-word').innerText = '';
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(createLetterButton);
+    createBackspaceButton();
+    createSpaceButton();
   } else {
     loadWord();
   }
 }
-
 
 function checkSillyWord(typedWord) {
   const match = words.find(w => w.word === typedWord);
@@ -257,4 +214,5 @@ window.onload = () => {
     idx = 0;
     loadWord();
   });
+  loadWord();
 };
