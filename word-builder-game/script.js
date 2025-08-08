@@ -6,42 +6,18 @@ function shuffle(array) {
   }
 }
 
-// List your images here (exact filenames in images/ folder)
+// Image list (exact filenames from images/ folder)
 const imageFiles = [
-  'CAT.png',
-  'DOG.png',
-  'SUN.png',
-  'CAR.png',
-  'LIAM.jpg',
-  'ELENA.jpg',
-  'MOM.jpg',
-  'DAD.jpg',
-  'MAMAN.jpg',
-  'BABA.jpg',
-  'NIMA.jpg',
-  'MARJAN.jpg',
-  'LOVE.png',
-  'PIG.png',
-  'COW.png',
-  'BAT.png',
-  'BEE.png',
-  'EGG.png',
-  'JAM.png',
-  'CORN.png',
-  'BAG.png',
-  'PEN.png',
-  'MAP.png',
-  'BOX.png',
-  'SKY.jpg',
-  'LEAF.png',
-  'TREE.png',
-  'SEA.png',
-  'RAIN.png',
-  'HAT.png',
-  'SILLY.png'  // silly mode image
+  'CAT.png', 'DOG.png', 'SUN.png', 'CAR.png',
+  'LIAM.jpg', 'ELENA.jpg', 'MOM.jpg', 'DAD.jpg', 'MAMAN.jpg', 'BABA.jpg',
+  'NIMA.jpg', 'MARJAN.jpg', 'LOVE.png', 'PIG.png', 'COW.png', 'BAT.png',
+  'BEE.png', 'EGG.png', 'JAM.png', 'CORN.png', 'BAG.png', 'PEN.png',
+  'MAP.png', 'BOX.png', 'SKY.jpg', 'LEAF.png', 'TREE.png', 'SEA.png',
+  'RAIN.png', 'HAT.png',
+  'SILLY.png' // silly mode special image
 ];
 
-// Build the words array (exclude silly.png from normal words)
+// Words array (exclude SILLY.png from normal play)
 const words = imageFiles
   .filter(name => name.toLowerCase() !== 'silly.png')
   .map(name => ({
@@ -51,7 +27,9 @@ const words = imageFiles
 
 let idx = 0;
 let silly = false;
+let showHint = false; // HINT button state
 
+// Sounds
 const clickSfx = new Audio('sounds/click.mp3');
 const successSfx = new Audio('sounds/success.mp3');
 
@@ -63,12 +41,16 @@ function playSound(sound) {
 function loadWord() {
   silly = false;
   document.getElementById('image').src = words[idx].img;
-  document.getElementById('target-word').innerText = words[idx].word;
+  document.getElementById('target-word').innerText = showHint ? words[idx].word : '';
   document.getElementById('drop-zone').innerText = '';
   document.getElementById('feedback').innerText = '';
+
   const lettersDiv = document.getElementById('letters');
   lettersDiv.innerHTML = '';
-  words[idx].word.split('').sort(() => 0.5 - Math.random()).forEach(l => createLetterButton(l));
+  words[idx].word
+    .split('')
+    .sort(() => 0.5 - Math.random())
+    .forEach(l => createLetterButton(l));
   createBackspaceButton();
 }
 
@@ -80,12 +62,8 @@ function createLetterButton(letter) {
     playSound(clickSfx);
     const zone = document.getElementById('drop-zone');
     zone.innerText += letter;
-    // speak(letter);
 
-    // Check in silly mode as user types
-    if (silly) {
-      checkSillyWord(zone.innerText);
-    }
+    if (silly) checkSillyWord(zone.innerText);
   };
   document.getElementById('letters').appendChild(btn);
 }
@@ -106,8 +84,8 @@ function createBackspaceButton() {
 function createSpaceButton() {
   const btn = document.createElement('div');
   btn.className = 'letter';
-  btn.style.background = '#9E9E9E'; // gray for space
-  btn.innerText = '␣'; // or just 'SPACE'
+  btn.style.background = '#9E9E9E';
+  btn.innerText = '␣';
   btn.onclick = () => {
     playSound(clickSfx);
     const zone = document.getElementById('drop-zone');
@@ -134,6 +112,7 @@ function checkWord() {
 }
 
 function nextWord() {
+  if (showHint) toggleHint();
   idx = (idx + 1) % words.length;
   loadWord();
 }
@@ -152,6 +131,18 @@ function toggleSillyMode() {
     createSpaceButton();
   } else {
     loadWord();
+  }
+}
+
+function toggleHint() {
+  showHint = !showHint;
+  const btn = document.getElementById('hint-btn');
+  btn.innerText = `Hint: ${showHint ? 'ON' : 'OFF'}`;
+  btn.classList.toggle('hint-on', showHint);
+
+  // Update word display only in normal mode
+  if (!silly) {
+    document.getElementById('target-word').innerText = showHint ? words[idx].word : '';
   }
 }
 
@@ -184,7 +175,6 @@ function speak(txt) {
   speechSynthesis.speak(u);
 }
 
-// Example simple confetti animation (can replace with library)
 function launchConfetti() {
   if (window.confetti) {
     confetti({
@@ -207,9 +197,8 @@ function preloadImages(files, callback) {
   });
 }
 
-
 window.onload = () => {
-  preloadImages(imageFiles,  () => {
+  preloadImages(imageFiles, () => {
     shuffle(words);
     idx = 0;
     loadWord();

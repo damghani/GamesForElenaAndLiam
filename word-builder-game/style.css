@@ -137,3 +137,12 @@ button {
     padding: 10px;
   }
 }
+
+#hint-btn {
+  background: #9E9E9E; /* default off */
+  color: white;
+}
+
+#hint-btn.hint-on {
+  background: #4CAF50; /* green when ON */
+}
