@@ -66,17 +66,32 @@ function loadWord() {
   silly = false;
 
   const imgElement = document.getElementById('image');
-  const newSrc = words[idx].img;
+  const lettersDiv = document.getElementById('letters');
+  const dropZone = document.getElementById('drop-zone');
 
-  const tempImg = new Image();
-  tempImg.onload = () => {
-    imgElement.src = newSrc;
-    document.getElementById('target-word').innerText = words[idx].word;
-    document.getElementById('drop-zone').innerText = '';
-    document.getElementById('feedback').innerText = '';
+  // Clear UI immediately so it's never left blank
+  imgElement.src = '';
+  lettersDiv.innerHTML = '';
+  dropZone.innerText = '';
+  document.getElementById('feedback').innerText = '';
 
-    const lettersDiv = document.getElementById('letters');
-    lettersDiv.innerHTML = '';
+  // Preload image to avoid missing image problem
+  const preloader = new Image();
+  preloader.onload = () => {
+    imgElement.src = preloader.src;
+
+    // Only build letters after image is ready
+    words[idx].word
+      .split('')
+      .sort(() => 0.5 - Math.random())
+      .forEach(l => createLetterButton(l));
+    createBackspaceButton();
+  };
+  preloader.onerror = () => {
+    console.error('Failed to load image:', words[idx].img);
+    imgElement.alt = 'Image not available';
+
+    // Still show letters even if image failed
     words[idx].word
       .split('')
       .sort(() => 0.5 - Math.random())
@@ -84,12 +99,8 @@ function loadWord() {
     createBackspaceButton();
   };
 
-  tempImg.onerror = () => {
-    console.error(`Failed to load image: ${newSrc}`);
-    imgElement.src = 'images/fallback.png'; // Optional fallback
-  };
-
-  tempImg.src = newSrc;
+  preloader.src = words[idx].img;
+  document.getElementById('target-word').innerText = words[idx].word;
 }
 
 function createLetterButton(letter) {
